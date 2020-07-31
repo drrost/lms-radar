@@ -34,7 +34,7 @@ class DBManager:
         return cur.fetchall()
 
     def presence(self, dt_from, dt_to, xlogin):
-        sql = "SELECT workplace, strftime('%Y-%m-%d %H-%M-%S', date_time, 'unixepoch', 'localtime') date_time "\
+        sql = "SELECT xlogin, workplace, strftime('%Y-%m-%d %H-%M-%S', date_time, 'unixepoch', 'localtime') date_time "\
               "FROM seat "\
               "WHERE strftime('%Y-%m-%d %H-%M-%S', date_time, 'unixepoch', 'localtime') >= '2020-07-31 00-00-00'"\
               "  AND strftime('%Y-%m-%d %H-%M-%S', date_time, 'unixepoch', 'localtime') < '2020-07-31 23-00-00'"\
