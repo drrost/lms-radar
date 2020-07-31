@@ -6,7 +6,6 @@ from DBManager import DBManager
 hostName = "localhost"
 serverPort = 8777
 
-
 class MyServer(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path.startswith("/presence"):
@@ -15,7 +14,6 @@ class MyServer(BaseHTTPRequestHandler):
             self.do_home(self.path)
 
     def do_presence(self, path):
-        print("!")
         path_components = urlparse(self.path)
         query = path_components.query
         query_parameters = parse_qs(query)
@@ -34,12 +32,10 @@ class MyServer(BaseHTTPRequestHandler):
 
         # HTML
         self.s_print("<html><head></head>")
-        self.s_print("<style>table, th, td {border: 1px solid black;}</style>")
-        self.s_print("<p>Request: %s</p>" % self.path)
         self.s_print("<body>")
 
-        rows = self.get_all_users()
-        self.print_table(presences)
+        titles = ["#", "xlogin", "workspace", "date_time"]
+        self.print_table(titles, presences)
 
         self.s_print("</body></html>")
 
@@ -51,11 +47,11 @@ class MyServer(BaseHTTPRequestHandler):
 
         # HTML
         self.s_print("<html><head></head>")
-        self.s_print("<p>Request: %s</p>" % path)
         self.s_print("<body>")
 
         rows = self.get_all_users()
-        self.print_table(rows)
+        titles = ["#", "xlogin"]
+        self.print_table(titles, rows)
 
         self.s_print("</body></html>")
 
@@ -72,11 +68,21 @@ class MyServer(BaseHTTPRequestHandler):
             self.print_td(td)
         self.s_print("</tr>")
 
-    def print_table(self, rows):
-        self.s_print("<table style=\"width:50%\">")
-        self.s_print("<tr><th>xlogin</th></tr>")
+    def print_titles(self, titles):
+        self.s_print("<tr>")
+        for title in titles:
+            self.s_print("<th>" + title + "</th>")
+        self.s_print("</tr>")
+
+    def print_rows(self, rows):
         for i, row in enumerate(rows):
             self.print_tr(i, row)
+
+    def print_table(self, titles, rows):
+        self.s_print("<style>table, th, td {border: 1px solid black;}</style>")
+        self.s_print("<table style=\"width:50%\">")
+        self.print_titles(titles)
+        self.print_rows(rows)
         self.s_print("</table>")
 
     def get_all_users(self):
