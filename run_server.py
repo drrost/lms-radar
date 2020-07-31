@@ -1,5 +1,4 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
-import time
 from urllib.parse import urlparse, parse_qs
 
 from DBManager import DBManager
@@ -35,11 +34,15 @@ class MyServer(BaseHTTPRequestHandler):
         path_components = urlparse(self.path)
         query = path_components.query
         query_parameters = parse_qs(query)
-        print(query_parameters['xlogin'])
+        xlogin_arr = query_parameters['xlogin']
+        if len(xlogin_arr) == 0:
+            return
+        xlogin = xlogin_arr[0]
+        print(xlogin)
 
-        # db_manager = DBManager()
-        # presences = db_manager.presence("2020-07-31 00-00-00", "2020-07-31 23-00-00", "ama")
-        # print(presences)
+        db_manager = DBManager()
+        presences = db_manager.presence("2020-07-31 00-00-00", "2020-07-31 23-00-00", xlogin)
+        print(presences)
 
     def do_home(self, path):
         pass
