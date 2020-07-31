@@ -5,6 +5,8 @@ class NetworkManager:
     conn = http.client.HTTPSConnection("lms.ucode.world")
     access_token = ""
 
+    # TODO: Remove the password from here. Read it from an environment variable.
+    #
     def getToken(self):
         payload = "username=rdruzhchen&password=arlHX2qbHmfVOMyWvQGdfpxLN1YKl2ne&grant_type=password"
         headers = {

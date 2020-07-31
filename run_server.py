@@ -17,10 +17,14 @@ class MyServer(BaseHTTPRequestHandler):
         self.s_print("<p>Request: %s</p>" % self.path)
         self.s_print("<body>")
 
-        rows = self.fetch_data()
+        rows = self.get_all_users()
         self.print_table(rows)
 
         self.s_print("</body></html>")
+
+        # db_manager = DBManager()
+        # presences = db_manager.presence("2020-07-31 00-00-00", "2020-07-31 23-00-00", "ama")
+        # print(presences)
 
     def s_print(self, str):
         self.wfile.write(bytes(str, "utf-8"))
@@ -33,9 +37,9 @@ class MyServer(BaseHTTPRequestHandler):
             self.s_print("<td>" + row[0] + "</td></tr>")
         self.s_print("</table>")
 
-    def fetch_data(self):
+    def get_all_users(self):
         db_manager = DBManager()
-        return db_manager.fetch_data()
+        return db_manager.all_users()
 
 if __name__ == "__main__":
     webServer = HTTPServer((hostName, serverPort), MyServer)
