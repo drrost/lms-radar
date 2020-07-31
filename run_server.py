@@ -1,12 +1,20 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import time
+from urllib.parse import urlparse, parse_qs
+
 from DBManager import DBManager
 
 hostName = "localhost"
 serverPort = 8777
 
+
 class MyServer(BaseHTTPRequestHandler):
     def do_GET(self):
+        if self.path.startswith("/presence"):
+            self.do_presence(self.path)
+        else:
+            self.do_home()
+
         # Headers
         self.send_response(200)
         self.send_header("Content-type", "text/html")
@@ -22,9 +30,19 @@ class MyServer(BaseHTTPRequestHandler):
 
         self.s_print("</body></html>")
 
+    def do_presence(self, path):
+        print("!")
+        path_components = urlparse(self.path)
+        query = path_components.query
+        query_parameters = parse_qs(query)
+        print(query_parameters['xlogin'])
+
         # db_manager = DBManager()
         # presences = db_manager.presence("2020-07-31 00-00-00", "2020-07-31 23-00-00", "ama")
         # print(presences)
+
+    def do_home(self, path):
+        pass
 
     def s_print(self, str):
         self.wfile.write(bytes(str, "utf-8"))
