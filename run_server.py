@@ -2,12 +2,16 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs
 
 from DBManager import DBManager
+from TablePrinter import TablePrinter
 
 hostName = "localhost"
 serverPort = 8777
 
 class MyServer(BaseHTTPRequestHandler):
+    tablePrinter: TablePrinter
+
     def do_GET(self):
+        self.tablePrinter = TablePrinter(self.wfile)
         if self.path.startswith("/presence"):
             self.do_presence(self.path)
         else:
@@ -31,13 +35,12 @@ class MyServer(BaseHTTPRequestHandler):
         self.end_headers()
 
         # HTML
-        self.s_print("<html><head></head>")
-        self.s_print("<body>")
+        self.__s_print("<html><head></head><body>")
 
         titles = ["#", "xlogin", "workspace", "date_time"]
-        self.print_table(titles, presences)
+        self.tablePrinter.print_table(titles, presences)
 
-        self.s_print("</body></html>")
+        self.__s_print("</body></html>")
 
     def do_home(self, path):
         # Headers
@@ -46,48 +49,23 @@ class MyServer(BaseHTTPRequestHandler):
         self.end_headers()
 
         # HTML
-        self.s_print("<html><head></head>")
-        self.s_print("<body>")
+        self.__s_print("<html><head></head>")
+        self.__s_print("<body>")
 
-        rows = self.get_all_users()
+        rows = self.__get_all_users()
         titles = ["#", "xlogin"]
-        self.print_table(titles, rows)
+        self.tablePrinter.print_table(titles, rows)
 
-        self.s_print("</body></html>")
+        self.__s_print("</body></html>")
 
-    def s_print(self, str):
-        self.wfile.write(bytes(str, "utf-8"))
 
-    def print_td(self, str):
-        self.s_print("<td>" + str + "</td>")
-
-    def print_tr(self, i, row):
-        self.s_print("<tr>")
-        self.print_td(str(i + 1))
-        for td in row:
-            self.print_td(td)
-        self.s_print("</tr>")
-
-    def print_titles(self, titles):
-        self.s_print("<tr>")
-        for title in titles:
-            self.s_print("<th>" + title + "</th>")
-        self.s_print("</tr>")
-
-    def print_rows(self, rows):
-        for i, row in enumerate(rows):
-            self.print_tr(i, row)
-
-    def print_table(self, titles, rows):
-        self.s_print("<style>table, th, td {border: 1px solid black;}</style>")
-        self.s_print("<table style=\"width:50%\">")
-        self.print_titles(titles)
-        self.print_rows(rows)
-        self.s_print("</table>")
-
-    def get_all_users(self):
+    def __get_all_users(self):
         db_manager = DBManager()
         return db_manager.all_users()
+
+    def __s_print(self, str):
+        self.wfile.write(bytes(str, "utf-8"))
+
 
 if __name__ == "__main__":
     webServer = HTTPServer((hostName, serverPort), MyServer)
